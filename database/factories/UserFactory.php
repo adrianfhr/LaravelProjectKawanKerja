@@ -14,7 +14,7 @@ class UserFactory extends Factory
     /**
      * The current password being used by the factory.
      */
-    protected static ?string $password;
+    protected static ?string $password = null;
 
     /**
      * Define the model's default state.
@@ -24,21 +24,34 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
+            'unix_id' => Str::uuid(),
+            'username' => fake()->unique()->userName(),
+            'password' => static::$password ??= Hash::make('password'), // Default password
+            'role' => fake()->randomElement(['ADMIN', 'USER']), // Random role
+            'created_at' => now(),
+            'updated_at' => now(),
+            'created_by' => null,
+            'updated_by' => null,
         ];
     }
 
     /**
-     * Indicate that the model's email address should be unverified.
+     * Set the user as an admin.
      */
-    public function unverified(): static
+    public function admin(): static
     {
         return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
+            'role' => 'ADMIN',
+        ]);
+    }
+
+    /**
+     * Set the user as a regular user.
+     */
+    public function user(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'USER',
         ]);
     }
 }
