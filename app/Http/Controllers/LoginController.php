@@ -34,12 +34,13 @@ class LoginController extends Controller
      */
     public function logout(Request $request): RedirectResponse
     {
-        Auth::logout();
+        // Log::info('Logout initiated by user: ', ['user_id' => Auth::id()]); // Tambahkan log
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        Auth::logout(); // Hapus session
+        $request->session()->invalidate(); // Hapus data session
+        $request->session()->regenerateToken(); // Regenerasi token CSRF
 
-        return redirect('/');
+        return redirect('/login'); // Redirect ke halaman login
     }
 }
 
